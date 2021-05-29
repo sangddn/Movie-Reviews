@@ -1,0 +1,62 @@
+---
+title: 'Homework #11'
+author: "Sang Doan"
+date: "11/9/2020"
+output: pdf_document
+---
+
+```{r setup, include = FALSE}
+source('config.R')
+```
+
+# Problem 1
+```{r}
+KEY <- 'PPzQ0BEBtzpkQN4ryAamlYmF0NEOpHAB'
+movies <- movie_info(
+  query = 'women',
+  start_date = '2010-01-01',
+  end_date = '2020-01-01',
+  key = KEY
+)
+
+movies[, .(name, opening)]
+```
+
+# Problem 2
+```{r echo = TRUE, eval = FALSE}
+show_review(movies, 12)
+```
+
+# Problem 3
+```{r echo = TRUE, eval = FALSE}
+say_summary(movies, 12)
+```
+
+# Problem 4
+```{r}
+movs <- map_dfr(1980:1990, function(year) {
+  repeat {
+    out <- movie_info(
+      start_date = paste(year, '-07-01', sep = ''),
+      end_date = paste(year, '-07-31', sep = ''),
+      key = KEY
+    )
+    if(nrow(out) > 0) break
+  }
+  return(out)
+})
+
+summaries <- movs$summary
+
+# Number of movies reviewed
+length(summaries) 
+
+# Find longest summary by words
+longest_summary <- str_split(summaries, pattern = ' ') %>% lengths %>% which.max()
+print(summaries[longest_summary])
+```
+```{r echo = TRUE, eval = FALSE}
+say_summary(movs, longest_summary)
+show_review(movs, longest_summary)
+```
+
